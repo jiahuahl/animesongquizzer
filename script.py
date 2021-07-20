@@ -7,7 +7,7 @@ GUESSDURATION = 10
 ANSWERDURATION = 8
 SONGCOUNT = 10
 MAXTRY = 50
-CHANGEBACKGROUND = 5
+CHANGEBACKGROUND = 4
 
 FONT = "BowlbyOneSC-Regular.ttf"
 FFMPEG = 'G:\Scripts\FFmpeg\staticbuild\\bin\\ffmpeg.exe -loglevel error -stats '
@@ -186,7 +186,7 @@ def MakeVideo():
     context = []
 
     for i in range(1, songTotal + 1):
-        if (NumberUsedBackground >= 5):
+        if (NumberUsedBackground >= CHANGEBACKGROUND):
             NumberUsedBackground = 0
             PickNewBackground(backgroundContext)
         for j in range(MAXTRY):
