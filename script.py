@@ -10,6 +10,7 @@ SONGCOUNT = 10
 MAXTRY = 50
 CHANGEBACKGROUND = 4
 DATAFOLDER = "data_main"
+OUTPUTNAME = "output.mp4"
 
 FONT = "BowlbyOneSC-Regular.ttf"
 FFMPEG = 'G:\Scripts\FFmpeg\staticbuild\\bin\\ffmpeg.exe -loglevel error -stats '
@@ -129,7 +130,7 @@ def TestSingleFile():
     os.system(cmd)
 
     addText = NUMTEXTARGS.format("test", "100", "100", "200")
-    cmd = FFMPEG + "-y -i " + "normalized.mp4" + addText + "-b:a 320k " + "output.mp4"
+    cmd = FFMPEG + "-y -i " + "normalized.mp4" + addText + "-b:a 320k " + OUTPUTNAME
     os.system(cmd)
     
 def CountDatabase():
