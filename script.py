@@ -3,11 +3,13 @@ import subprocess
 import os
 import random
 
-GUESSDURATION = 10
-ANSWERDURATION = 8
+GUESSDURATION = 8
+ANSWERDURATION = 6
+COPYRIGHTLIMIT = 8
 SONGCOUNT = 10
 MAXTRY = 50
 CHANGEBACKGROUND = 4
+DATAFOLDER = "data_main"
 
 FONT = "BowlbyOneSC-Regular.ttf"
 FFMPEG = 'G:\Scripts\FFmpeg\staticbuild\\bin\\ffmpeg.exe -loglevel error -stats '
@@ -132,7 +134,7 @@ def TestSingleFile():
     
 def CountDatabase():
     totalDir = 0
-    for base, dirs, files in os.walk("data"):
+    for base, dirs, files in os.walk(DATAFOLDER):
         for directories in dirs:
             totalDir += 1
     return totalDir
@@ -160,7 +162,7 @@ def CanPick(songFolder, context):
     print("checking: " + title)
 
     if (copyright == "true"):
-        if (max(GUESSDURATION, ANSWERDURATION) > 8):
+        if (max(GUESSDURATION, ANSWERDURATION) > COPYRIGHTLIMIT):
             print("rejecting because clips are too long, will get copyrighted")
             return False
 
@@ -198,7 +200,7 @@ def MakeVideo():
             NumberUsedBackground = 0
             PickNewBackground(backgroundContext)
         for j in range(MAXTRY):
-            randFolder = "data\\" + random.choice(os.listdir("data")) + "\\"
+            randFolder = DATAFOLDER + "\\" + random.choice(os.listdir(DATAFOLDER)) + "\\"
             if (CanPick(randFolder, context)):
                 MakeSegment(i, randFolder, GUESSDURATION, ANSWERDURATION)
                 NumberUsedBackground += 1
