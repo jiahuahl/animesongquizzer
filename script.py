@@ -147,14 +147,22 @@ def CountOutput():
 def CanPick(songFolder, context):
     info = open(songFolder + "info.txt")
     title = ""
-
+    copyright = ""
+    
     for line in info:
         if line.startswith("title"):
             title = line[line.find(":")+1:].strip()
-            
-    print("checking: " + title)
+        if line.startswith("copyright"):
+            copyright = line[line.find(":")+1:].strip()
 
     info.close()
+    
+    print("checking: " + title)
+
+    if (copyright == "true"):
+        if (max(GUESSDURATION, ANSWERDURATION) > 8):
+            print("rejecting because clips are too long, will get copyrighted")
+            return False
 
     AlreadyExist = title in context
     print(context)
