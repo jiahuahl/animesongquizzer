@@ -3,11 +3,13 @@ import subprocess
 import os
 import random
 
+DATAFOLDER = "data_main"
+
 def MakeCsv():
     file = open("database.csv", "w")
     file.write("id,title,song,anime,songtype,artist,qstart,qend,atime,difficulty,copyright\n")
     
-    for songFolder in os.listdir("data"):
+    for songFolder in os.listdir(DATAFOLDER):
         AddEntry(file, songFolder)
 
     file.close()
@@ -18,7 +20,7 @@ def AddEntry(file, songFolder):
 #            if(line[line.find(":")+1:].strip() == "true"):
 #                return #already have this
 
-    info = open("data\\"+songFolder+"\\info.txt", "r")
+    info = open(DATAFOLDER+"\\"+songFolder+"\\info.txt", "r")
     
     id = songFolder
     title = ""

@@ -21,6 +21,12 @@ RESIZE = " -vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease,pad=1920
 VIDEO = "video.mp4"
 COLORKEY = " -filter_complex \"[1:v]colorkey=0x44B521:0.4:0.0[ckout];[0:v][ckout]overlay[vout]\" -map \"[vout]\" "
 
+def ExtraFilters(songtype, difficulty, anime, extracontext):
+    typeCheck = songtype == "op"
+    diffCheck = (difficulty == "easy") or (difficulty == "medium")
+    animCheck = anime not in extracontext
+    return typeCheck and diffCheck and animCheck
+
 def get_length(filename):
     result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
                              "format=duration", "-of",
@@ -62,11 +68,6 @@ def MakeSegment(index, folder, qDuration, aDuration):
 
     cmd = FFMPEG + '-y -i unnormalizedclip.mp4 -filter:a loudnorm -b:a 320k ' + addText + "output\\" + str(index) + ".mp4"
     os.system(cmd)
-
-    #cmd = FFMPEG + "-y -i " + "normalized.mp4" + addText + "-b:a 320k " + "output\\" + str(index) + ".mp4"
-    #os.system(cmd)
-    
-    return
 
 def MakeCountdownTemplate(pickedTemplate, countdown):
     background = "background.mp4"
@@ -147,15 +148,24 @@ def CountOutput():
             totalFiles += 1
     return totalFiles
 
-def CanPick(songFolder, context):
+def CanPick(songFolder, context, extracontext):
     info = open(songFolder + "info.txt")
     title = ""
+    anime = ""
+    songtype = ""
+    difficulty = ""
     copyright = ""
     
     for line in info:
         if line.startswith("title"):
             title = line[line.find(":")+1:].strip()
-        if line.startswith("copyright"):
+        elif line.startswith("anime"):
+            anime = line[line.find(":")+1:].strip()
+        elif line.startswith("type"):
+            songtype = line[line.find(":")+1:].strip()
+        elif line.startswith("difficulty"):
+            difficulty = line[line.find(":")+1:].strip()
+        elif line.startswith("copyright"):
             copyright = line[line.find(":")+1:].strip()
 
     info.close()
@@ -170,9 +180,10 @@ def CanPick(songFolder, context):
     AlreadyExist = title in context
     print(context)
 
-    bShouldPick = AlreadyExist is not True
+    bShouldPick = (AlreadyExist is not True) and ExtraFilters(songtype, difficulty, anime, extracontext)
     if (bShouldPick):
         context.append(title)
+        extracontext.append(anime)
         print("picking: " + title)
     
     return bShouldPick
@@ -195,6 +206,7 @@ def MakeVideo():
     PickNewBackground(backgroundContext)
     
     context = []
+    extracontext = []
 
     for i in range(1, songTotal + 1):
         if (NumberUsedBackground >= CHANGEBACKGROUND):
@@ -202,7 +214,7 @@ def MakeVideo():
             PickNewBackground(backgroundContext)
         for j in range(MAXTRY):
             randFolder = DATAFOLDER + "\\" + random.choice(os.listdir(DATAFOLDER)) + "\\"
-            if (CanPick(randFolder, context)):
+            if (CanPick(randFolder, context, extracontext)):
                 MakeSegment(i, randFolder, GUESSDURATION, ANSWERDURATION)
                 NumberUsedBackground += 1
                 break
@@ -213,13 +225,16 @@ def MakeVideo():
         concatFile.write('file \'output\\' + str(i+1) + ".mp4\'\n")
     concatFile.close()
 
-    cmd = FFMPEG + '-y -f concat -safe 0 -i concatFile.txt -c copy -b:a 320k output.mp4'
+    cmd = FFMPEG + '-y -f concat -safe 0 -i concatFile.txt -c copy -b:a 320k ' + OUTPUTNAME
     os.system(cmd)
 
-  #  cmd = FFMPEG + '-y -i unnormalized.mp4 -filter:a loudnorm -b:a 320k output.mp4'
-  #  os.system(cmd)
+def CleanupFolder():
+    folder = "output"
+    for file in os.listdir("output"):
+        os.remove("output\\" + file)
 
 def main(argv):
+    CleanupFolder()
     MakeVideo()
     #test single file
     #TestSingleFile()
