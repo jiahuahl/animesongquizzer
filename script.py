@@ -9,8 +9,8 @@ COPYRIGHTLIMIT = 8
 SONGCOUNT = 10
 MAXTRY = 50
 CHANGEBACKGROUND = 4
-DATAFOLDER = "data_main"
-OUTPUTNAME = "output.mp4"
+DATAFOLDER = "data_test"
+OUTPUTNAME = "outputtest.mp4"
 
 FONT = "BowlbyOneSC-Regular.ttf"
 FFMPEG = 'G:\Scripts\FFmpeg\staticbuild\\bin\\ffmpeg.exe -loglevel error -stats '
